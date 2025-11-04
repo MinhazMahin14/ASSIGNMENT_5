@@ -3,55 +3,56 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Emergency Services Web App</title>
+  <title>Emergency Service Directory</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="IMAGES/logo.png" />
 </head>
-<body>
 
+<body>
   <!-- Navbar -->
   <nav class="navbar">
     <div class="navbar-left">
       <img src="IMAGES/logo.png" alt="Logo" class="logo" />
-      <div class="brand-text">
-        <span class="brand-name">Emergency<br />Service</span>
-      </div>
+      <span class="brand-name">Emergency Service</span>
     </div>
+
     <div class="navbar-right">
-      <div class="counter heart-counter" title="Hearts">
-        <img src="IMAGES/heart.png" alt="Heart" />
-        <span id="heartCount">0</span>
+      <div class="counter heart-counter" title="Heart Count">
+        0 <img src="IMAGES/heart.png" alt="Heart" class="icon-heart" />
       </div>
-      <div class="counter coin-counter" title="Coins">
-        <img src="IMAGES/coin.png" alt="Coin" />
-        <span id="coinCount">100</span>
+      <div class="counter coin-counter" title="Coin Count">
+        100 <img src="IMAGES/coin.png" alt="Coin" class="icon-coin" />
       </div>
-      <button id="copyCounterBtn" class="copy-counter-btn">2 Copy</button>
+      <button id="copyCounterBtn" class="copy-btn">0 Copy</button>
     </div>
   </nav>
 
   <!-- Hero Section -->
-  <header class="hero-section">
-    <img src="IMAGES/logo.png" alt="Hero Logo" class="hero-logo" />
+  <header class="hero">
+    <img src="IMAGES/logo.png" alt="Hero Icon" class="hero-icon" />
     <h1>Emergency Service Directory</h1>
-    <p>Government Emergency Services at Your Fingertip – A Project by <strong>Government of the People’s Republic of Bangladesh</strong></p>
+    <p>
+      Government Emergency Services at Your Fingertip – A Project by 
+      <span class="gov-text">Government of the People’s Republic of Bangladesh</span>
+    </p>
   </header>
 
-  <!-- Main Content -->
-  <main class="main-content">
-    <section class="cards-section" id="cardsSection">
-      <!-- Emergency Cards Inserts Here -->
+  <!-- Main Section -->
+  <main>
+    <section class="cards-container" id="cardsContainer">
+      <!-- Cards generated dynamically -->
     </section>
 
-    <section class="history-section">
+    <aside class="call-history">
       <div class="history-header">
-        <span class="history-title">
-          <img src="IMAGES/clock.png" alt="Clock" class="clock-icon" /> Call History
-        </span>
+        <div class="history-label">
+          <img src="IMAGES/clock.png" alt="Clock Icon" class="clock-icon" />
+          Call History
+        </div>
         <button id="clearHistoryBtn" class="btn-clear">Clear</button>
       </div>
       <ul id="historyList" class="history-list"></ul>
-    </section>
+    </aside>
   </main>
 
   <script src="script.js"></script>
