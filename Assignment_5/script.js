@@ -1,216 +1,286 @@
-const services = [
+"use strict";
+
+// Emergency services array, with name, number, icon filename, category, and description
+const emergencyServices = [
   {
     name: "National Emergency Number",
-    subtitle: "National Emergency",
     number: "999",
+    icon: "police.png",
     category: "All",
-    icon: "lock.png",
-    iconBgClass: "icon-container",
+    description: "National Emergency",
+    iconClass: "icon-default",
   },
   {
     name: "Police Helpline Number",
-    subtitle: "Police",
     number: "999",
-    category: "Police",
     icon: "police.png",
-    iconBgClass: "icon-container police",
+    category: "Police",
+    description: "Police",
+    iconClass: "icon-police",
   },
   {
     name: "Fire Service Number",
-    subtitle: "Fire Service",
     number: "999",
-    category: "Fire",
     icon: "fire-service.png",
-    iconBgClass: "icon-container fire",
+    category: "Fire",
+    description: "Fire Service",
+    iconClass: "icon-fire",
   },
   {
     name: "Ambulance Service",
-    subtitle: "Ambulance",
     number: "1994-999999",
-    category: "Health",
     icon: "ambulance.png",
-    iconBgClass: "icon-container ambulance",
+    category: "Health",
+    description: "Ambulance",
+    iconClass: "icon-ambulance",
   },
   {
     name: "Women & Child Helpline",
-    subtitle: "Women & Child Helpline",
     number: "109",
+    icon: "police.png",
     category: "Help",
-    icon: "lock.png",
-    iconBgClass: "icon-container",
+    description: "Women & Child Helpline",
+    iconClass: "icon-default",
   },
   {
     name: "Anti-Corruption Helpline",
-    subtitle: "Anti-Corruption",
     number: "106",
+    icon: "police.png",
     category: "Govt.",
-    icon: "lock.png",
-    iconBgClass: "icon-container",
+    description: "Anti-Corruption",
+    iconClass: "icon-default",
   },
   {
     name: "Electricity Helpline",
-    subtitle: "Electricity Outage",
     number: "16216",
+    icon: "police.png",
     category: "Electricity",
-    icon: "lock.png",
-    iconBgClass: "icon-container",
+    description: "Electricity Outage",
+    iconClass: "icon-default",
   },
   {
     name: "Brac Helpline",
-    subtitle: "Brac",
     number: "16445",
+    icon: "police.png",
     category: "NGO",
-    icon: "lock.png",
-    iconBgClass: "icon-container",
+    description: "Brac",
+    iconClass: "icon-default",
   },
   {
     name: "Bangladesh Railway Helpline",
-    subtitle: "Bangladesh Railway",
     number: "163",
+    icon: "Bangladesh-Red.png",
     category: "Travel",
-    icon: "lock.png",
-    iconBgClass: "icon-container",
+    description: "Bangladesh Railway",
+    iconClass: "icon-railway",
   },
 ];
 
-// DOM References:
-const heartCountEl = document.getElementById("heart-count");
-const coinCountEl = document.getElementById("coin-count");
-const copyCountEl = document.getElementById("copy-count");
-const cardsContainer = document.getElementById("cards-container");
-const historyList = document.getElementById("history-list");
-const clearHistoryBtn = document.getElementById("clear-history");
+// DOM Selectors
+const cardsSection = document.getElementById("cardsSection");
+const historyList = document.getElementById("historyList");
+const heartCountSpan = document.getElementById("heartCount");
+const coinCountSpan = document.getElementById("coinCount");
+const copyCounterBtn = document.getElementById("copyCounterBtn");
+const clearHistoryBtn = document.getElementById("clearHistoryBtn");
 
+// State variables
 let heartCount = 0;
 let coinCount = 100;
-let copyCount = 0;
+let copyCount = 2;
+let callHistory = [];
 
-function updateCounters() {
-  heartCountEl.textContent = heartCount;
-  coinCountEl.textContent = coinCount;
-  copyCountEl.textContent = `${copyCount} Copy`;
-
-  if (coinCount < 20) {
-    coinCountEl.style.color = "#e33e3e";
-  } else {
-    coinCountEl.style.color = "#146432";
-  }
+// Format time as Bangla-style time indicator (simple AM/PM here)
+function formatTime(date) {
+  // Using toLocaleTimeString with options
+  return date.toLocaleTimeString("en-US", {
+    hour12: true,
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
 }
 
-function getCurrentTime() {
-  const now = new Date();
-  return now.toLocaleTimeString("en-US", { hour12: true });
-}
-
+// Creates a single card DOM node for a service
 function createCard(service) {
   const card = document.createElement("article");
-  card.className = "card";
+  card.classList.add("card");
 
-  const iconContainer = document.createElement("div");
-  iconContainer.className = service.iconBgClass;
-  const iconImg = document.createElement("img");
-  iconImg.className = "card-icon";
-  iconImg.src = `IMAGES/${service.icon}`;
-  iconImg.alt = service.name + " icon";
-  iconContainer.appendChild(iconImg);
-  card.appendChild(iconContainer);
+  // Heart button (favorite)
+  const heartBtn = document.createElement("button");
+  heartBtn.classList.add("btn-heart");
+  heartBtn.title = "Heart";
+  heartBtn.innerHTML = `<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5A5.5 5.5 0 0 1 7.5 3 5.48 5.48 0 0 1 12 6.28 5.48 5.48 0 0 1 16.5 3 5.5 5.5 0 0 1 22 8.5c0 3.78-3.4 6.86-8.55 11.54z" />
+  </svg>`;
+  card.appendChild(heartBtn);
 
-  // Heart icon (static as in image)
-  const heartSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  heartSVG.setAttribute("class", "heart-icon");
-  heartSVG.setAttribute("viewBox", "0 0 24 24");
-  heartSVG.innerHTML = `
-    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
-    2 5.41 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09 
-    C13.09 3.81 14.76 3 16.5 3 
-    19.58 3 22 5.41 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-  `;
-  card.appendChild(heartSVG);
-
-  const title = document.createElement("h2");
-  title.className = "card-title";
-  title.textContent = service.name;
-  card.appendChild(title);
-
-  const subtitle = document.createElement("p");
-  subtitle.className = "card-subtitle";
-  subtitle.textContent = service.subtitle;
-  card.appendChild(subtitle);
-
-  const number = document.createElement("p");
-  number.className = "card-number";
-  number.textContent = service.number;
-  card.appendChild(number);
-
-  const category = document.createElement("span");
-  category.className = "card-category";
-  category.textContent = service.category;
-  card.appendChild(category);
-
-  // Buttons container
-  const buttons = document.createElement("div");
-  buttons.className = "buttons";
-
-  const btnCopy = document.createElement("button");
-  btnCopy.className = "btn-copy";
-  btnCopy.innerHTML = `<img src="IMAGES/copy.png" alt="copy" /> Copy`;
-  btnCopy.addEventListener("click", async () => {
-    try {
-      await navigator.clipboard.writeText(service.number);
-      copyCount++;
-      updateCounters();
-      alert(`Copied: ${service.number}`);
-    } catch {
-      alert("Copy failed");
-    }
+  heartBtn.addEventListener("click", () => {
+    heartCount++;
+    heartCountSpan.textContent = heartCount;
+    heartBtn.classList.toggle("favorited");
   });
 
-  const btnCall = document.createElement("button");
-  btnCall.className = "btn-call";
-  btnCall.innerHTML = `<img src="IMAGES/phone.png" alt="call" /> Call`;
-  btnCall.addEventListener("click", () => {
+  // Icon Circle with image
+  const iconCircle = document.createElement("div");
+  iconCircle.className = `card-icon-circle ${service.iconClass || "icon-default"}`;
+  const iconImg = document.createElement("img");
+  iconImg.src = `IMAGES/${service.icon}`;
+  iconImg.alt = service.name + " Icon";
+  iconImg.className = "icon-image";
+  iconCircle.appendChild(iconImg);
+  card.appendChild(iconCircle);
+
+  // Card name and description
+  const nameHeading = document.createElement("h3");
+  nameHeading.textContent = service.name;
+  card.appendChild(nameHeading);
+
+  const descriptionPar = document.createElement("p");
+  descriptionPar.textContent = service.description;
+  descriptionPar.className = "description";
+  card.appendChild(descriptionPar);
+
+  // Number display
+  const numberDiv = document.createElement("div");
+  numberDiv.className = "number";
+  numberDiv.textContent = service.number;
+  card.appendChild(numberDiv);
+
+  // Category Tag
+  const categoryTag = document.createElement("span");
+  categoryTag.className = "category-tag";
+  categoryTag.textContent = service.category;
+  card.appendChild(categoryTag);
+
+  // Buttons container
+  const btnGroup = document.createElement("div");
+  btnGroup.className = "btn-group";
+
+  // Copy Button
+  const copyBtn = document.createElement("button");
+  copyBtn.className = "btn-copy";
+  copyBtn.innerHTML = `
+    <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M16 1H4c-1.104 0-2 .896-2 2v14h2V3h12V1zm3 4H8c-1.104 0-2 .896-2 2v16c0 1.104.896 2 2 2h11c1.104 0 2-.896 2-2V7c0-1.104-.896-2-2-2zm0 18H8V7h11v16z"/>
+    </svg>
+    Copy`;
+  btnGroup.appendChild(copyBtn);
+
+  // Call Button
+  const callBtn = document.createElement("button");
+  callBtn.className = "btn-call";
+  callBtn.innerHTML = `
+    <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M6.62 10.79a15.053 15.053 0 0 0 6.59 6.59l2.2-2.21a1 1 0 0 1 1.11-.21c1.21.48 2.53.75 3.9.75a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1c-9.94 0-18-8.06-18-18a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.37.27 2.69.75 3.9a1 1 0 0 1-.21 1.11l-2.2 2.2z"/>
+    </svg>
+    Call`;
+  btnGroup.appendChild(callBtn);
+
+  card.appendChild(btnGroup);
+
+  // Copy button event logic
+  copyBtn.addEventListener("click", () => {
+    // Copy number to clipboard
+    navigator.clipboard.writeText(service.number).then(() => {
+      copyCount++;
+      updateCopyCount();
+      copyBtn.textContent = "Copied";
+      copyBtn.disabled = true;
+      setTimeout(() => {
+        copyBtn.textContent = "Copy";
+        copyBtn.disabled = false;
+      }, 1500);
+    });
+  });
+
+  // Call button event logic
+  callBtn.addEventListener("click", () => {
     if (coinCount < 20) {
-      alert("Not enough coins! Minimum 20 required.");
+      alert("Not enough coins to make a call. Please earn more coins.");
       return;
     }
     coinCount -= 20;
-    updateCounters();
-    alert(`Calling ${service.name} (${service.number})...`);
+    updateCoinCount();
 
-    const li = document.createElement("li");
-    const leftDiv = document.createElement("div");
-    leftDiv.textContent = service.name;
-    const spanNum = document.createElement("span");
-    spanNum.textContent = service.number;
-    leftDiv.appendChild(document.createElement("br"));
-    leftDiv.appendChild(spanNum);
+    alert(`Calling ${service.name} at number ${service.number}...`);
 
-    const timeSpan = document.createElement("span");
-    timeSpan.textContent = getCurrentTime();
-
-    li.appendChild(leftDiv);
-    li.appendChild(timeSpan);
-    historyList.prepend(li);
+    // Add call to history with current time
+    const callTime = formatTime(new Date());
+    addCallHistory({
+      name: service.name,
+      number: service.number,
+      time: callTime,
+    });
   });
-
-  buttons.appendChild(btnCopy);
-  buttons.appendChild(btnCall);
-
-  card.appendChild(buttons);
 
   return card;
 }
 
-function init() {
-  services.forEach((service) => {
-    cardsContainer.appendChild(createCard(service));
-  });
-
-  updateCounters();
+// Update coin count on UI and color logic (red if coins < 20)
+function updateCoinCount() {
+  coinCountSpan.textContent = coinCount;
+  if (coinCount < 20) {
+    coinCountSpan.parentElement.style.color = "#dc3545"; // red
+  } else {
+    coinCountSpan.parentElement.style.color = "#222";
+  }
 }
 
+// Update copy count text and button label
+function updateCopyCount() {
+  copyCounterBtn.textContent = `${copyCount} Copy`;
+}
+
+// Add call to call history list and update UI
+function addCallHistory(callEntry) {
+  callHistory.unshift(callEntry); // add newest to front
+
+  renderCallHistory();
+}
+
+// Render the call history list UI
+function renderCallHistory() {
+  historyList.innerHTML = ""; // Clear current list
+
+  // Render each item
+  callHistory.forEach((entry) => {
+    const li = document.createElement("li");
+    li.className = "history-item";
+
+    const nameSpan = document.createElement("span");
+    nameSpan.textContent = entry.name + " Number";
+
+    const numberSpan = document.createElement("span");
+    numberSpan.textContent = entry.number;
+
+    const timeDiv = document.createElement("div");
+    timeDiv.className = "history-time";
+    timeDiv.textContent = entry.time;
+
+    li.appendChild(nameSpan);
+    li.appendChild(numberSpan);
+    li.appendChild(timeDiv);
+
+    historyList.appendChild(li);
+  });
+}
+
+// Clear history button click
 clearHistoryBtn.addEventListener("click", () => {
-  historyList.innerHTML = "";
+  callHistory = [];
+  renderCallHistory();
 });
+
+// Initialize app cards
+function init() {
+  emergencyServices.forEach((service) => {
+    const card = createCard(service);
+    cardsSection.appendChild(card);
+  });
+
+  updateCoinCount();
+  updateCopyCount();
+}
 
 init();
