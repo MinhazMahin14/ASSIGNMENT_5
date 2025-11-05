@@ -1,0 +1,121 @@
+/* Reset */
+
+
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4fcf7;
+  color: #222;
+  min-height: 100vh;
+  line-height: 1.4;
+}
+
+
+
+/* Navbar */
+.navbar {
+  height: 58px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 26px;
+  padding-right: 28px;
+  background-color: white;
+  box-shadow: none;
+  border-bottom: 1px solid #f0f6f3;
+  user-select: none;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.03em;
+}
+
+
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+
+.logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+
+
+.brand-name {
+  color: #02723a;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+
+
+
+/* Navbar counters right side */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+
+
+
+.counter {
+  background-color: #e9f5ee;
+  border-radius: 23px;
+  padding: 6px 12px 4px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #222222cc;
+  cursor: default;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 52px;
+  justify-content: center;
+}
+
+
+
+
+.icon-heart,
+.icon-coin {
+  width: 17px;
+  height: 17px;
+  object-fit: contain;
+  user-select: none;
+}
+
+
+
+/* Copy button */
+.copy-btn {
+  background: #05944f;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+  border: none;
+  border-radius: 24px;
+  padding: 7px 22px 6px 23px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  user-select: none;
+}
+
+
